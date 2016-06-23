@@ -1,0 +1,17 @@
+{
+  "name": "hellocloud",
+  "version": "1.0.0",
+  "description": "Simple hello world app",
+  "main": "helloCloud.js",
+  "scripts": {
+    "test": "node helloCloud.js"
+  },
+  "author": "Sean C Mulholland",
+  "license": "ISC",
+  "private": "true",
+  "dependencies": {
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "request": "^2.72.0"
+  }
+}

@@ -1,0 +1,36 @@
+.header{
+	height: 170px;
+	width: 100%;
+	font: 20px bold arial, sans-serif;
+	font-color: black;
+}
+
+h2 {
+	width: 200px;
+	border-style: outset;
+	text-align: center;
+}
+
+.mainContent {
+
+	width: auto;
+	height: auto;
+	padding: 8px;
+	margin: 4px;
+
+	display: inline-block;
+	align-items: center;
+
+	border: 1px solid grey;
+	border-radius: 4px;
+	background: linear-gradient(silver, #f0f0f0);
+}
+
+h5 {
+	margin: 0px;
+}
+
+.footer {
+	font: 12px arial, sans-serif;
+	font-color: black;
+}
