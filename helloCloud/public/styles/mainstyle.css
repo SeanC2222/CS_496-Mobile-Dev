@@ -30,6 +30,14 @@ h5 {
 	margin: 0px;
 }
 
+#update {
+	border-radius: 4px;
+	border: 1px solid grey;
+}
+#update:hover {
+	box-shadow: 0 1px 1px 0 #000000, 0 4px 4px 0 #dddddd;
+}
+
 .footer {
 	font: 12px arial, sans-serif;
 	font-color: black;
