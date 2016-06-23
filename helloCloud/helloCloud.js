@@ -43,4 +43,6 @@ helloCloud.use("/", function(inr, outr){
 	outr.send("404");
 });
 
-helloCloud.listen(helloCloud.get('port'), function(){console.log("RUNNING");});
+helloCloud.listen(helloCloud.get('port'), function(){
+	console.log("helloCloud.js up and running on port: " + helloCloud.get('port'));
+});
