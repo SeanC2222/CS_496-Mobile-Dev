@@ -1,0 +1,20 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Basic Repository",
+  "main": "api.js",
+  "scripts": {
+    "test": "node api.js"
+  },
+  "author": "Sean C. Mulholland",
+  "license": "ISC",
+  "private": "true",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.14.0",
+    "mongodb": "^2.2.1",
+    "request": "^2.73.0"
+  }
+}
