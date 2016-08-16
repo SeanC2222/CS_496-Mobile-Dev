@@ -1,0 +1,174 @@
+<html>
+
+   <head>
+      <title> The Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1> <a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+
+	 <div class="intro-content">
+	    <h3> How To: This Page </h3>
+	    <p>This page contains information on how to make an ImageRequest with Google's Volley library. It is presented seperately
+	    because there are a few more considerations when making an image request that don't quite pair with the other simple
+	    built in request types.</p>
+	    <p>However, it is presumed that the reader has read at least the StringRequest section on the previous page. It is also 
+	    presumed that the user has a basic knowledge of networking and Android 
+	    <a href="https://developer.android.com/reference/android/widget/ImageView.html">ImageView</a>s</p>
+	 </div>
+
+	 </div>
+
+      </section>
+
+      <section class="body-wrapper">
+
+	 <div class="body-content">
+	    <h3> ImageRequest </h3>
+	    <p>The ImageRequest that comes with Volley handles several major image retrieval concerns for you. First off it prevents
+	    you from accidentally ruining the encoding by converting between data types. If a character or byte gets changed due to 
+	    an accidental parser dropping bytes or interpreting and changing the data the image can be ruined. As such, the image gets
+	    handled internally as an Array of Java <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Byte.html">Byte</a>
+	    objects. This alleviates developer overhead and prevents errors.</p>
+	    <p> Secondly, it automatically interprets the Byte array as an Android 
+	    <a href="https://developer.android.com/reference/android/graphics/Bitmap.html">Bitmap</a> object and returns it as such.
+	    This further alleviates any sort of deciphering that you as a developer would have to do.</p>
+	    <p>Lastly, the call will allow you to scale the image during the decoding process returning a quality image fit to the
+	    size of the ImageView. Again, this alleviates a load of coding that you would have to do and allows more portable implementations
+	    for different Android platforms that may have different screen sizes.</p>
+	    <div class="body-content-code">
+	       <p><b>ImageRequest</b>(String <b>url</b>, Response.Listener&#60;Bitmap&#62; <b>listener</b>, int <b>maxWidth</b>, int <b>maxHeight</b>, ScaleType <b>scaleType</b>, Config <b>decodeConfig</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	    </div>
+	    <p>As with the previous examples the constructor is presented again. Immediately we recognize the <b>url</b>, <b>listener</b>, and
+	    <b>errorListener</b> parameters. These are defined and passed the same way as illustrated in the previous Requests. You'll also notice
+	    there is no method parameter. The built in image request always performs a GET request; if you're looking for other functionality you'll
+	    have to build it yourself in a custom request.</p>
+	    <p>The four new parameters are <b>maxWidth</b>, <b>maxHeight</b>, <b>scaleType</b>, and <b>decodeConfig</b>. The <b>decodeConfig</b>
+	    parameter is an object that contains the decoding information for different image encodings and won't be touched on in this guide as
+	    Bitmap processing is outside the scope of the guide. A <b>null</b> value can be passed in its place and the defualt decoding
+	    process will be used.</p>
+	    <p><b>maxWidth</b> and <b>maxHeight</b> are both used as maximum dimensions for the Bitmap object to be returned. These values
+	    are used in the scaling process if the image requested is larger than the ImageView would allow. You can request a larger
+	    image, but the ImageView will scale with it and your UI will be ruined.</p>
+	    <p><b>scaleType</b> is a an object that defines the aspect ratio of an ImageView. The available options are:</p>
+	    <div class="body-content-code">
+	       <p>ImageView.CENTER<br>
+	       ImageView.CENTER_CROP<br>
+	       ImageView.CENTER_INSIDE<br>
+	       ImageView.FIT_CENTER<br>
+	       ImageView.FIT_END<br>
+	       ImageView.FIT_START<br>
+	       ImageView.FIT_XY<br>
+	       ImageView.MATRIX<br></p>
+	    </div>
+	    <p>The definitions can be found on the 
+	    <a href="https://developer.android.com/reference/android/widget/ImageView.ScaleType.html">ImageView.ScaleType</a> page linked.
+	    It essentially determines the way that the Bitmap will be decoded. The smartest method would be to just retrieve the ImageView
+	    and then pass the ScaleType to the function call since you'll want to populate that particular ImageView anyways and will need
+	    to retrieve a reference to it anyways. This is outlined in the example. </p>
+	    <div class="body-content-code">
+	       <p>import .com.android.volley.Request<br>
+	       import .com.android.volley.RequestQueue<br>
+	       import .com.android.volley.Response<br><br>
+	       import .com.android.volley.toolbox.ImageRequest<br>
+	       import .com.android.volley.toolbox.VolleyError<br>
+	       import .com.android.volley.toolbox.Volley</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>ImageView <b>mImageView</b> = (ImageView) findViewById(R.id.my_image_view); //Your ImageView ID goes here</p>
+	       <p>TextView <b>mTextView</b> = (TextView) findViewById(R.id.my_text_view); //Your TextView ID goes here</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>ImageRequest <b>myReq</b> = new ImageRequest("https://i.ytimg.com/vi/icqDxNab3Do/maxresdefault.jpg",<br><br>
+	       &nbsp;&nbsp;new Response.Listener&#60;Bitmap&#62;() {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onResponse(Bitmap image){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mImageView</b>.setImageBitmap(image);<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;}, <b>mImageView</b>.getMaxWidth(), <b>mImageView</b>.getMaxHeight(), <b>mImageView</b>.getScaleType(), <b>null</b>,<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;new Response.ErrorListener(){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onErrorResponse(VolleyError error){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView</b>.setText("ERROR: Check console for error and stack trace...");<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error.printStackTrace();<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;});<br>
+	       //Add Request to RequestQueue<br>
+	       Volley.newRequestQueue(getApplicationContext()).add(myReq); //Bad RequestQueue method, used for illustration only!</p>
+	    </div>
+	 </div>
+
+
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="button" id="prev_page" value="Simple HTTP Requests">
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b> Make A Custom Request! </b><p> Follow the instructions on the following page to make your own Request! </p></center>
+	    </div></center>
+	    <div class="button-wrapper-right">
+	       <input type="button" id="next_page" value="Extending Custom Requests"> 
+	    </div>
+	 </div>
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+
+   <script src="javascript/image.js"></script>
+</html>

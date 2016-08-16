@@ -1,0 +1,144 @@
+<html>
+
+   <head>
+      <title> Introduction to the Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1><a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+	 <div class="intro-content">
+	    <h3> Motivation </h3>
+	    <p> This guide is meant to supplement the existing Android documentation of Google's Volley 
+	        HTTP request library. The documentation is enough for most experience Java/Android users
+	        to get started, but for novice users the library documenation presumes a lot of knowledge
+	        that this guide hopes to fill in. </p>
+	    <p> This guide has been written by Sean Mulholland as coursework for his CS 496 Mobile and 
+	        Cloud Development class, and may not represent expert knowledge of modern common Android
+	        or Java practices. It was written with best intentions as a peer to peer guide on how to
+	        get the library incorporated quickly and effectively into native Android apps. The library
+	        itself was written as a means to simplify the the execution of HTTP requests from previous
+	        methods that came bundled with Android, so hopefully I can live up to those intentions with
+	        this guide. </p>
+	 </div>
+	 <div class="intro-content">
+	    <h3> How To: Use This Guide </h3>
+	    <p> This guide will be made of mostly code examples and breakdown of those code examples. Simple
+	        practices are discussed in several areas, but generally I will try to keep the focus on the
+	        how as opposed to the why. People familiar with Java and or Volley should be able to skip to
+	        the relevant portions listed in the Navigation bar at any time. </p>
+	 </div>
+      </section>
+
+      <section class="body-wrapper">
+	 <div class="body-content">
+	    <h3> The Volley Library: The 5 W's </h3>
+	    <b>Who:</b><p> The users of this library are looking for a quick and easy way to make HTTP 
+			   requests that are fairly general, and not exceptionally specialized. Specialized users,
+			   and developers planning large downloads may find better libraries elsewhere.</p>
+			    
+	    <b>What:</b><p> Volley is a library designed specifically to take a lot of the thinking out of 
+			    making REST HTTP requests. It not only handles the request itself, but it handles 
+			    developer concerns such as caching, aynschronicity, response events, and 
+			    synchronization.</p>
+
+	    <b>When:</b><p> When basic HTTP requests are required by the client program. The library 
+			    supports extending the request class, but has built in requests for Strings, 
+			    JsonObjects, JsonArrays, and Images for the major HTTP verbs (GET/POST/PUT/DELETE/etc.)</p>
+
+	    <b>Where:</b><p> Volley is designed for use in Android apps. </p>
+
+	    <b>Why:</b><p> From the android documentatin: "Volley is an HTTP library that makes networking for 
+			   Android apps easier and most importantly, faster."[1] From a new users perspective,
+			   once I got past my hiccups, I found this to be largely true. The code structure is
+			   well thought out, and flexible to many of the networking needs of Android developers.</p>
+
+	    <b>More On Why:</b><p> For more details from a more experienced Dev, you can read a more indepth review  
+			   <a href="http://code.tutsplus.com/tutorials/an-introduction-to-volley--cms-23800">here</a>
+			   [2] focusing why devs should be excited about volley. The long and short is that it's  relatively
+			   lightweight, and ensures the requests are asynchronous without a lot of developer overhead or
+			   extra lines of code. It also automatically caches any responses automatically and reviews that cache
+			   prior to transmitting the requests to see if the request can be satisfied. According to the
+			   author, the Google+ team did a set of time trials pitting Volley against the other options 
+			   and methods available on Android. The results were that Volley performed up to 10x faster
+			   than the other options available. </p>
+
+	    <div class="references">
+	       <p>[1] "Transmitting Network Data Using Volley." Android Developers.
+		  <a href="https://developer.android.com/training/volley/index.html">
+		  https://developer.android.com/training/volley/index.html</a> 3 August 2016 </p>
+	       <p>[2] "An Introduction to Volley." Gianluca Segato.
+		  <a href="http://code.tutsplus.com/tutorials/an-introduction-to-volley--cms-23800">
+		  http://code.tutsplus.com/tutorials/an-introduction-to-volley--cms-23800</a> 4 August 2016 </p>
+
+	    </div>
+	 </div>
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="hidden" id="prev_page" value="The Library">
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b> What's in the box? </b><p> The next page will outline more specifically the capabilities in the library
+				      and the most pertinent classes that Android developers may be interested in! </p></center>
+	    </div><center>
+	    <div class="button-wrapper-right">
+	       <input type="button" id="next_page" value="The Library">
+	    </div>
+	 </div>
+
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+
+   <script src="javascript/intro.js"></script>
+
+</html>

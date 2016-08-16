@@ -1,0 +1,302 @@
+<html>
+
+   <head>
+      <title> The Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1><a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+
+	 <div class="intro-content">
+	    <h3> How To: This Page </h3>
+	    <p> Listed below you'll find a selection of what I've found to be the most relevant and useful classes
+	        and request types outlined with a breakdown of their purpose and their functionality. I start with a broad
+	        picture look at the library and how it actually interacts to create and make the requests. Then I follow up
+	        with an outline of the classes (introducing them with their constructor) that most novice developers will 
+	        be interested in. If you're ready to begin coding already, the sections on Simple HTTP Requests, Image Requests, 
+	        or Custom Requests may be more appropriate and involve code examples.
+	        </p>
+	 </div>
+
+	 <div class="intro-content">
+	    <h3> The Library: A Functionality Outline </h3>
+	    <p> The Volley library is a framework that supports making HTTP requests. At it's core it relies on the 
+	        base abstract class Request. 
+	        <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/Request.java">
+	        This class </a>is meant to be extended into more powerful extended classes that support specific
+	        types of data requests, several of which are extended and included in this library. Requests like a
+	        basic 
+	        <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/StringRequest.java">StringRequest</a>, 
+	        <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/JsonRequest.java">JSONRequest</a>, 
+	        the extended forms 
+	        <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/JsonObjectRequest.java">JsonObjectRequest</a> and 
+	        <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/JsonArrayRequest.java">JsonArrayRequest</a>, and
+	        <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/ImageRequest.java">ImageRequest</a> 
+	        all support their apparent request types in a simple interface, while maintaining the asynchronosity,
+	        cache functionality, and other built in features in the background without requiring extra code. These
+	        requests exist as objects and on their own don't perform any network action. However, the requests themselves
+	        do contain the callback functions that handle proper network responses as well as erroneous responses.</p>
+
+	        <p> The partner partner class that handles the actual network request (and by extension cache checks) is the
+	        <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/RequestQueue.java">RequestQueue</a>.
+	        A RequestQueue object will accept new Request objects, prioritize the requests based on available resources, check to
+	        see if the cache can resolve the request, and if not it enqueues the request internally prior to actually making the request.
+	        All this prioritizing, cache checking a requesting is handled internally using threads so that it happens <b>asynchronously!</b> 
+	        Once a response is received, the response data is cached internally to the RequestQueue. This is particularly 
+	        important to remember as <b>only the instantiation of the RequestQueue that is passed the Request will cache the data!</b> 
+	        This means it is in the developers best interests to only utilize one instance of RequestQueue for as long as possible
+	        which again means less code and less complexity in your code.</p>
+   
+	       <p> The last major class(es) of interest are the
+	       <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/Cache.java">Cache</a>
+	       and
+	       <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/Network.java">Network</a>.
+	       These are actually just interface classes but their implementation dictates the internal functionality of the RequestQueue. Each
+	       RequestQueue will contain an implemented Network object and an implemented Cache object (again the defaults, 
+	       <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/BasicNetwork.java">BasicNetwork</a> and 
+	       <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/DiskBasedCache.java">DiskBasedCache)</a>
+	       are already implemented for you!) which will handle the majority of the backend. For the novice you don't need to know
+	       the details to use the library, but it's important to know that the interfaces exist to better utilize the default
+	       settings in your applications. A BasicNetwork will automatically gather headers from the passed Request,
+	       (<a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">see here</a> for setting custom headers),
+	       append the appropriate cache headers, build the whole request, send it, and then pass the response back to the cache and
+	       Request object callback so the data can be handled. The DiskBasedCache will automatically create a 4096B disk cache 
+	       for all responses (so keep the requests small!) and internally manage the storing and retrieval of data. 
+	 </div>
+
+      </section>
+
+      <section class="body-wrapper">
+	 <div class="body-content">
+	    <h3> StringRequest </h3>
+	    <div class="body-content-important">
+	       <p><b>StringRequest</b>(int <b>method</b>, String <b>url</b>, Response.Listener&#60;String&#62; <b>listener</b>, ErrorListener <b>errorListener</b>);</p>
+	       <p><b>StringRequest</b>(String <b>url</b>, Listener&#60;String&#62; <b>listener</b>, ErrorListener <b>errorListener</b>);</p>
+	    </div>
+	    <p>The StringRequest class is the simplest way to make requests. As it's name states, the response will be parsed and returned
+	    to the <b>listener</b> (or <b>errorListener</b>!) as a Java String object. Looking at the constructors we see that it can accept an 
+	    optional <b>method</b>, the desired <b>url</b>, a <b>listener</b> object, and an <b>errorListener</b> object. A typical 
+	    StringRequest won't have a body in its request, even though it can be used to perform any of the basic HTTP verbs. By not 
+	    including a specific <b>method</b>, the default <b>method</b> is a GET request to the <b>url</b> String. The <b>listener</b> 
+	    is an object with internal function, onResponse(String <b>response</b>), that gets called when the response returns. If there
+	    is an error, the <b>errorListener</b> object calls an internal function, onErrorResponse(VolleyError <b>error</b>), that handles
+	    the error appropriately.</p>
+
+	    <p>As a developer, the StringRequest is useful any parsing or data handling would be easier on the client side. The StringRequest 
+	    simply takes the body of the response and encodes it in x-www-form-urlencoded format. More simple, it just takes the body of the
+	    response, and puts it into a String object and the developer can then handle the information themselves.</p>
+
+	    <p>The constructors for StringRequest actually call Java specific function 
+	    <a href="https://docs.oracle.com/javase/tutorial/java/IandI/super.html">super</a>. The short explanation of super is that it calls
+	    the equivalent function of the parent class that the calling class is derived from. In our case, this calls the Request constructor.
+	    In the creation of the Request, we can actually override certain functions of the parent class. This is relevant because if we want
+	    to include custom headers, or a body in our request we'll need to write our own getParams() and/or getBody() functions. This is
+	    discussed in depth in the coding examples on the following pages.</p>
+
+	 </div>
+
+	 <div class="body-content">
+	    <h3> JsonObjectRequest </h3>
+	    <div class="body-content-important">
+	       <p><b>JsonObjectRequest</b>(int <b>method</b>, String <b>url</b>, JsonObject <b>jsonRequest</b>, Response.Listener&#60;JsonObject&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+
+	       <p><b>JsonObjectRequest</b>(String <b>url</b>, JsonObject <b>jsonRequest</b>, Response.Listener&#60;JsonObject&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	    </div>
+	    <p>The JsonObjectRequest is quite similar to the StringRequest except instead of a singular String object being returned, the 
+	    response body is parsed and returned as a singular Java
+	    <a href="http://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html">JsonObject</a>. The <b>method</b> will define what HTTP
+	    verb is used when making the request, the <b>url</b> is the desired URL, and as before there is a <b>listener</b> and 
+	    <b>errorListener</b> for defining the response callback functions. The big difference is that the JsonObjectRequest can be passed
+	    a <b>jsonRequest</b> JsonObject that will automatically placed into the body of the request for you encoded as JSON. This parameter 
+	    is optional and a <b>null</b> value can be passed. In the case of the second constructor that omits <b>method</b>, the constructor
+	    will make a GET request if <b>jsonRequest</b> is <b>null</b>, and a POST request if <b>jsonRequest</b> is not <b>null</b></p>
+
+	    <p>As a developer, the JsonObjectRequest performs in the exact same manner as the StringRequest. The only difference is how the 
+	    response is parsed. When interacting with an API that returns a singular JsonObject from <b>url</b> with any <b>method</b>, the
+	    developer can use this class to simplify a good deal of parsing and error handling.</p>
+
+	    <p>As many web based API's rely heavily on JSON encoding when transmitting data this will likely be a bread and butter request. 
+	    Unfortunately, the library doesn't support any other major encoding schemes (such as XML) so other solutions will have to be 
+	    devised. Fortunately, the StringRequest can be used in this case OR you can customize your own requests as will be illustrated 
+	    later.</p>
+
+	 </div>
+
+	 <div class="body-content">
+	    <h3> JsonArrayRequest </h3>
+	    <div class="body-content-important">
+	       <p><b>JsonArrayRequest</b>(int <b>method</b>, String <b>url</b>, JsonArray <b>jsonRequest</b>, Response.Listener&#60;JsonArray&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	       <p><b>JsonArrayRequest</b>(String <b>url</b>, JsonArray <b>jsonRequest</b>, Response.Listener&#60;JsonArray&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	    </div>
+	    <p>The JsonArrayRequest is the exact same as the JsonObjectRequest, except that an Array of Java JsonObjects is parsed from the
+	    response body and is returned as a Java <a href="http://docs.oracle.com/javaee/7/api/javax/json/JsonArray.html">JsonArray</a>.
+	    It's also worth noting that instead of a JsonObject as <b>jsonRequest</b> we see that the constructor expects a JsonArray.</p>
+
+	    <p>As an developer, the JsonArrayRequest will be significantly useful for creating ListViews in Android. When working with an
+	    API that would return an Array of JsonObjects, this will automatically segregate the objects, and populate them into the JsonArray
+	    which can then be easily accessed by index to retrieve common data from the objects (e.g. from a Student Database, the Student
+	    ID and Student Names can be iterated over and retrieved).</p>
+	 
+	    <p>Experience and API will dictate whether this class or the JsonObjectRequest class will be more appropriate. It will likely
+	    be clear even to novice coders that when you want multiple objects from an API this version will be the correct choice.</p>
+ 
+	 </div>
+
+	 <div class="body-content">
+	    <h3> JSONRequest </h3>
+	    <div class="body-content-important">
+	       <p><b>JSONRequest</b>(int <b>method</b>, String <b>url</b>, String <b>requestBody</b>, Response.Listener&#60;T&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	    </div>
+	    <p>The JSONRequest is the parent class to the JsonObjectRequest and JsonArrayRequest classes. This usually won't be 
+	    a particularly useful class, unless you plan to override a bunch of functions, but is still worth mentioning as it can be extended
+	    and customized if neither the JsonObjectRequest or the JsonArrayRequest match your desired functionality. As before, the constructor
+	    expects a <b>method</b>, a <b>url</b>, a <b>listener</b> of the return type, 'T', that you expect the response to return, and an 
+	    <b>errorListener</b>. The difference is that this class expects a String that represents the <b>requestBody</b> of the request.</p>
+
+	    <p>As a developer, you will need to define the function parseNetworkResponse(NetworkResponse <b>response</b>). In Java, this is done
+	    when instantiating the object using the Java <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Override.html">@Override</a>
+	    keyword and defining the function yourself. In each case, the return type of parseNetworkResponse must always be the same type, 'T',
+	    as defined in our listener.</p>
+
+	    <p>Entry level developers likely won't need this class in particular. Custom requests can be defined more easily via other methods</p>
+	 </div>
+
+	 <div class="body-content">
+	    <h3> ImageRequest </h3>
+	    <div class="body-content-important">
+	       <p><b>ImageRequest</b>(String <b>url</b>, Response.Listener&#60;Bitmap&#62; <b>listener</b>, int <b>maxWidth</b>, int <b>maxHeight</b>, ScaleType <b>scaleType</b>, Config <b>decodeConfig</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	    </div>
+	    <p>The ImageRequest is a unique request compared to the other types. As stated in its name, the request returns an image in the form
+	    of an Android <a href="https://developer.android.com/reference/android/graphics/Bitmap.html">Bitmap</a> object. This is an Android
+	    specific return value and can't be used in base Java. You'll notice there is no longer a request <b>method</b> as with the other
+	    requests. The ImageRequest class always uses a GET method when making requests. While being able to POST an image may be useful,
+	    it isn't currently supported by the basic library requests. This guide won't detail the process of posting an image, but you 
+	    can extend a custom request to POST image data. This request WILL however automatically attempt to scale the Bitmap for you
+	    according to the <b>maxWidth</b>, <b>maxHeight</b>, and <b>scaleType</b>. The <b>decodeConfig</b> parameter is also important to
+	    decoding the image, but decoding bitmaps is not the goal of this guide. Further information can be found 
+	    <a href="https://developer.android.com/reference/android/graphics/BitmapFactory.Options.html">here</a>. The <b>url</b>,
+	    <b>listener</b>, and <b>errorListener</b> parameters are equivalent to the previous classes.</p>
+	 
+	    <p>As a developer, the relationship between the Bitmap returned by <b>listener</b> and the Android
+	    <a href="https://developer.android.com/reference/android/widget/ImageView.html">ImageView</a> that will be used
+	    to display the image will be important. The <b>maxWidth</b> and <b>maxHeight</b> will need to correlate to the ImageView's
+	    dimensions, and the <b>scaleType</b> should correlate to the ImageView as well. It may also be worth looking into the Volley
+	    classes <a href="https://developer.android.com/training/volley/request.html">ImageLoader</a>, and 
+	    <a href="https://developer.android.com/training/volley/request.html">NetworkImageView</a>. The former can be used by the 
+	    Android app to handle large volumes of ImageRequests and will cache the images locally (in a separate cache from the normal
+	    internal cache of the RequestQueue) to limit requests, and the latter will automatically perform an ImageRequest and populate 
+	    an ImageView with the data returned. These two functions aren't within the scope of the guide either, but with understanding
+	    of the ImageRequest, the other two classes shouldn't be out of reach.</p>
+
+	    <p>Entry level developers will be interested in this request because managing image retrieval can be difficult as the data
+	    is encoded in binary data, so handling it can be have a few more quirks. In Java, the encapsulated class based language structure
+	    may affect the binary in ways that aren't expected so extra care must be taken. In any case, this class can greatly simplify
+	    image retrieval to brighten and greatly enhance a new dev's app by making resources more readily accessible.</p> 
+
+	    
+	 </div>
+
+	 <div class="body-content">
+	    <h3> RequestQueue </h3>
+	    <div class="body-content-important">
+	       <p><b>newRequestQueue</b>(Context <b>context</b>);</p>
+	    </div>
+	    <p>As stated in the outline, the way Volley handles requests is to build the requests as objects and pass them to a RequestQueue
+	    to handle the cache checks, and network requests. Since each of the Requests outlined above are all extensions of the Request class,
+	    the RequestQueue can .addToRequestQueue() any object previously described (as well as custom requests!). The RequestQueue can be
+	    instantiated directly using the
+	    <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/RequestQueue.java">
+	    RequestQueue</a> constructor, but as this guide is intended with beginners in mind another method is outlined that automatically
+	    sets up the cache and network handling. This function is actually a method of the 
+	    <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/toolbox/Volley.java">
+	    Volley</a> class that will return a new RequestQueue object with default settings in the <b>context</b> passed to it.</p>
+
+	    <p>As a developer, it is important to understand the <b>context</b> in which you are instantiating your RequestQueue.
+	    The <b>context</b> is the whole of the environment that the object will be instantiated in, meaning the variables the
+	    RequestQueue will have access to and the running environment that the RequestQueue will exist in. The <b>context</b>
+	    object is a facade so that the RequestQueue will have access to only what we as developers want. Passing a Context in
+	    Android is a simple as importing the Context class, and calling one of it's methods (e.g. Context.getApplicationContext()).
+	    Since we ideally want only one RequestQueue throughout the life of the app to maximize the caching abilities, we generally
+	    will want <b>context</b> to be the application context so that it exists for the life of the app.</p>
+
+	    <p>Instantiating the RequestQueue and using it is very straightforward for beginners. The difficult portion comes when
+	    figuring out how to make the RequestQueue exist for the life of the app as the user moves between Android 
+	    <a href="https://developer.android.com/reference/android/app/Activity.html">Activities</a>. If the app is only a single UI 
+	    and the user never changes Activities (while boring), these considerations aren't necessary. However most apps will involve
+	    multiple activities so we'll need a method for keeping our RequestQueue going between them otherwise the scope ends and the
+	    object will be cleaned up. This is where a <a href="https://developer.android.com/training/volley/requestqueue.html">Singleton 
+	    Pattern</a> will be useful. Essentially it requires writing your own class that maintains a static instance of its own type that has
+	    methods to retrieve the data from a RequestQueue inside the static instance. This is will be outlined in the next section.</p>
+	 </div>
+
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="button" id="prev_page" value="Introduction"> 
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b>Quickstart Setup!</b><p> Follow the instructions on the following page to setup Volley! </p></center>
+	    </div></center>
+	    <div class="button-wrapper-right">
+	       <input type="button" id="next_page" value="Source & Setup"> 
+	    </div>
+	 </div>
+	 
+
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+
+   <script src="javascript/library.js"></script>
+
+</html>

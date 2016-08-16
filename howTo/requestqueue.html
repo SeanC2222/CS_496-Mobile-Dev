@@ -1,0 +1,250 @@
+<html>
+
+   <head>
+      <title> The Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1> <a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+
+	 <div class="intro-content">
+	    <h3> How To: This Page </h3>
+	    <p>This page contains instructions on using the RequestQueue for single requests, multiple requests and
+	    building a Singleton Instance to access your RequestQueue throughout the life of your app. The code is highlighted
+	    and should work when copied into your own project. Code is free to use at users discretion. Images are for reference in
+	    Android Studio.</p>
+	    <p>This page assumes you have the Volley library successfully set up and imported to your project.</p>
+	 </div>
+
+	 </div>
+
+      </section>
+
+      <section class="body-wrapper">
+
+	 <div class="body-content">
+	    <h3> RequestQueue: Simple</h3>
+	    
+	    <p>We'll start off this section by showing how to use the RequestQueue. This is by far the most complex part of using the library
+	    to its fullest, but we'll start off with some simple examples if you don't have the chops or experience for the more advanced methods
+	    (although it is the author's intent to show you how to do the advanced methods simply!).</p>
+
+	    <div class="body-content-code">
+	       <p>import .com.volley.toolbox.Volley;<br>
+		  import .com.volley.RequestQueue;<br>
+		  import .android.content.Context;</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>Volley.newRequestQueue(getApplicationContext()).add(&#60;your_request&#62;)</p>
+	    </div>
+	    
+	    <p> This snippet will instantiate a RequestQueue for the duration of the line, and handle whatever request you pass it. However,
+	    Since the life of the instance is only for the single request, this would not be valuable for an app that will have to make many
+	    requests because the life of the cache will be limited to the life of the RequestQueue. This is not a recommended method, but will
+	    work for single requests if that is all that is required.</p>
+	 </div>
+
+	 <div class="body-content">
+	    <h3> RequestQueue: Activity Scope</h3>
+	    <div class="body-content-code">
+	       <p>import .com.volley.toolbox.Volley;<br>
+		  import .com.volley.RequestQueue;<br><br>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>RequestQueue <b>myQueue</b> = Volley.newRequestQueue(getApplicationContext());<br>
+	       <b>myQueue</b>.add(&#60;your_request&#62;)</p>
+	    </div>
+	    <p>This snippet actually instantiates a RequestQueue object and stores it in <b>myQueue</b>. Like any other object, this 
+	    RequestQueue will exist for the life of its scope in the function you instantiate it in. Essentially, this object "lives" from
+	    when you store the new RequestQueue until the end of that block of code (until you hit the first unpaired '}'). This is better
+	    than our first version because we can pass multiple requests, and this will utilize the internal cache for the life of the 
+	    RequestQueue. We can still do better, but this method would be adequate if caching wasn't a concern or you only need to make
+	    requests during a single Android <a href="https://developer.android.com/reference/android/app/Activity.html">Activity</a>.</p>
+	 </div> 
+
+	 <div class="body-content">
+	    <h3> RequeustQueue: Hard(-ish) Mode</h3>
+	    <p>The greatest power in Volley comes from its automated cache system that takes almost no effort from a developers stand point
+	    and improves our apps speed as well as limits the power consumption and network traffic do to fewer requests hitting the network.
+	    The "hard" part is giving our RequestQueue the life to service all of our requests. The method of design will be called a 
+	    <a href="https://en.wikipedia.org/wiki/Singleton_pattern">Singleton design pattern</a>. Essentially, we need to write our own class
+	    that contains a <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/classvars.html">static</a> instance of itself. The
+	    short version on static variables is that the data has persistance even outside its own scope. So, if we create an instance of the
+	    class in a global scope the internal static instance will persist even between activity changes until the application ends. Because
+	    the Singleton will persist throughout the life of our app, we can stick a RequestQueue inside the Singleton so that it will also
+	    persist and with a few access methods we will be able to easily send requests via a single RequestQueue.</p>
+	    <div class="body-content-code">
+	       <p>import .com.volley.toolbox.Volley;<br>
+		  import .com.volley.Request;<br><br>
+		  import .com.volley.RequestQueue;<br><br>
+		  import .android.content.Context;</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+		  <p>public class permanentRequestQueue {<br><br>
+		     //Private members<br>
+		     &nbsp;&nbsp;private static permanentRequestQueue myPermanentRequestQueue;<br>
+		     &nbsp;&nbsp;private RequestQueue myRequestQueue; //This will be contained in myPermanentRequestQueue<br>
+		     &nbsp;&nbsp;private static Context appContext;<br>
+		     &nbsp;&nbsp;<br>
+		     //Private Methods<br>
+		     &nbsp;&nbsp;//Constructor<br>
+		     &nbsp;&nbsp;private permanentRequestQueue(Context appCont){<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;myPermanentRequestQueue = null; //Can't instantiate in constructor or an endless loop forms<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;appContext = appCont;<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;myRequestQueue = Volley.newRequestQueue(appContext); //getMyRequestQueue() defined below<br>
+		     &nbsp;&nbsp;}<br>
+		     &nbsp;&nbsp;<br>
+		     &nbsp;&nbsp;//Returns the RequestQueue<br>
+		     &nbsp;&nbsp;private RequestQueue getMyRequestQueue(){<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;return myRequestQueue; //no error checking included<br>
+		     &nbsp;&nbsp;}<br>
+		     &nbsp;&nbsp;<br>
+		     //Public Methods<br>
+		     &nbsp;&nbsp;//Instantiates a new internal static permanentRequestQueue, then returns that instance<br>
+		     &nbsp;&nbsp;public static synchronized permanentRequestQueue newPermRequestQueue(Context cont){<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;myPermanentRequestQueue = new permanentRequestQueue(cont); //Instantiates new static member<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;return myPermanentRequestQueue;<br>
+		     &nbsp;&nbsp;}<br>
+		     &nbsp;&nbsp;<br>
+		     &nbsp;&nbsp;//Gets current internal static instance; returns null if no instance created!<br>
+		     &nbsp;&nbsp;public static synchronized permanentRequestQueue getPermRequestQueue(){<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;return myPermanentRequestQueue; //no error checking included<br>
+		     &nbsp;&nbsp;}<br>
+		     &nbsp;&nbsp;<br>
+		     &nbsp;&nbsp;//Gets the RequestQueue internal to the static instance and adds the request to that RequestQueue<br>
+		     &nbsp;&nbsp;public <T> void addToMyRequestQueue(Request<T> request){<br>
+		     &nbsp;&nbsp;&nbsp;&nbsp;getMyRequestQueue().add(request); //Adds request to the internal RequestQueue of myInstance<br>
+		     &nbsp;&nbsp;}<br>
+		     &nbsp;&nbsp;<br>
+		     }<br>
+		  </p>
+		  <p><b>NOTE:</b>Used <a href="https://developer.android.com/training/volley/requestqueue.html">Google's Singleton Example</a>
+		  as reference during creation</p>
+	    </div>
+
+	    <p> The above code is an exceptionally simple version of a Singleton style class. The comments should outline what each portion does
+	    but the important notes are that when we call the newPermRequestQueue() method from a global scope with our application context, it will
+	    create a new static instance of PermanentRequestQueue globally. We then will only use the getPermRequestQueue() to return the permanent
+	    instance, on which we can call addToMyRequestQueue() and pass it a Request of anytype we want (which will be detailed in the next
+	    section). <b>Remember, since this module uses Volley we must fix the module build.gradle dependencies and update the app's manifest as
+	    outlined in the previous section or the new class won't work.</b></p>
+
+	    <p>To use this class, we simply need to create a new project and create a module that contains this class. We can then import that class
+	    into the main app and use it to make requests between activities. There will be minor build.gradle and settings.gradle configurations 
+	    necessary if you're using Android Studio.</p>
+
+	    <center><img class="body-content-img" src="images/reqq_1.jpg" width=70%></center><br>
+	    <center><b>Figure 1.</b> The new module </center><br>
+
+	    <center><img class="body-content-img" src="images/reqq_2.jpg" width=70%></center><br>
+	    <center><b>Figure 2.</b> Updating build.gradle </center><br>
+
+	    <center><img class="body-content-img" src="images/reqq_3.jpg" width=70%></center><br>
+	    <center><b>Figure 3.</b> Updating settings.gradle </center><br>
+
+	    <center><img class="body-content-img" src="images/reqq_4.jpg" width=70%></center><br>
+	    <center><b>Figure 4.</b> Importing our class </center><br>
+
+	    <center><img class="body-content-img" src="images/reqq_5.jpg" width=70%></center><br>
+	    <center><b>Figure 5.</b> Using the permanentRequestQueue </center><br>
+
+	    <center><img class="body-content-img" src="images/reqq_6.jpg" width=70%></center><br>
+	    <center><b>Figure 6.</b> Using the permanentRequestQueue in a second activity </center><br>
+
+	    <center><img class="body-content-img" src="images/reqq_7.jpg" width=70%></center><br>
+	    <center><b>Figure 7.</b> Data Returned from the 2 requests 3 second apart<br>
+				  Note the 2 lines with System.out show a 3 second difference </center><br>
+         </div>
+      
+	 <div class="body-content">
+	    <h3> RequestQueue Review </h3>
+	    <p>The RequestQueue houses all the powerful features of the library so using it intelligently is paramount to reaping the benefits
+	    of this particular library. It's up to the developer to devise how they want to use the library, and three options for 3 very different
+	    requirements are outlined here. The first is for singular requests or points where the cache isn't necessary. If you only need singular
+	    requests on rare occasions, it may be worth looking into the other native libraries such as
+	    <a href="https://developer.android.com/reference/org/apache/http/package-summary.html">Apache HttpClient</a>, and 
+	    <a href="https://developer.android.com/reference/java/net/URLConnection.html">URLConnection</a>. These don't include the threading or
+	    the caching and may fit your needs more appropriately.</p>
+
+	    <p>If you're new to Android Development, you may find it easier to keep your requests within a single activity's scope and may find
+	    the second method easier to grasp. This method may reap some benefits of the caching, but unless you're making a lot of requests 
+	    within the same activity you won't see large performance gains in your networking</p>
+
+	    <p>The final Singleton design pattern method will be the best choice for most intermediate to experienced developers. This single
+	    example doesn't address all the aspects of the Volley library, but as this guide is designed with beginners in mind it's assumed
+	    that you could design a more complex class that suits your needs. The reference 
+	    <a href="https://developer.android.com/training/volley/requestqueue.html">RequestQueue</a> documentation provides an example that
+	    includes a static ImageLoader that would be appropriate if your app included a lot of web resource image files. The gains by the
+	    cache would really be seen. The gains by designing a simple Singleton class for large volumes of relatively small requests would
+	    be well worth the small developer overhead and investment.</p>
+	 </div>
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="button" id="prev_page" value="Source & Setup"> 
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b> Make A Request! </b><p> Follow the instructions on the following page to get started making requests! </p></center>
+	    </div></center>
+	    <div class="button-wrapper-right">
+	       <input type="button" id="next_page" value="Simple HTTP Requests"> 
+	    </div>
+	 </div>
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+
+   <script src="javascript/requestqueue.js"></script>
+</html>

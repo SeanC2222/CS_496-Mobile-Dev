@@ -1,0 +1,375 @@
+<html>
+
+   <head>
+      <title> The Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1> <a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+
+	 <div class="intro-content">
+	    <h3> How To: This Page </h3>
+	    <p>This page outlines the code required to create the built-in Requests that come with the Volley library. The StringRequest
+	    will show a GET request, while the JsonObjectRequest and JsonArrayRequest will illustrate POST requests that get data in return. PUT
+	    requests, DELETE requests, and other methods will all be similar to the POST requests. This page builds on itself so the JSON
+	    requests presume you read the StringRequest section and only expands on the differences. ImageRequest is outlined in the following
+	    section. Extending the Request class (and the JSONRequest class) will be covered in the Extending Custom Requests section.</p>
+	    <p>This page assumes you have volley set up and successfully imported to your project, as well as a basic concept of networking
+	    practices (i.e. knowledge of HTTP verbs, and requests and responses).</p>
+	 </div>
+
+	 </div>
+
+      </section>
+
+      <section class="body-wrapper">
+
+	 <div class="body-content">
+	    <h3> Request Functionality </h3>
+	    <p> The built-in Request classes make retrieving common data forms exceptionally easy. As mentioned in the RequestQueue section, the
+	    RequestQueue is the workhorse. If the RequestQueue is the mailman, then the Requests themselves are the packages the mailman delivers.
+	    This package though, contains the method of delivery and address the content of delivery, as well as what to do when a response 
+	    comes back to the sender and further what to do if there is an error in the delivery process. The corollaries should all be clear.</b>
+	    <p>The most important feature to note though is that the 
+	    <a href="https://docs.oracle.com/javase/tutorial/uiswing/events/">Response.Listener</a> objects and 
+	    <a href="https://docs.oracle.com/javase/7/docs/api/javax/xml/transform/ErrorListener.html">Response.ErrorListener</a> objects 
+	    are special objects containing callback functions. Since the requests happen 
+	    <a href="https://en.wikipedia.org/wiki/Asynchrony_(computer_programming)">asynchronously</a> on their own threads, 
+	    you can't rely on an iterative design pattern. You'll have to give each request a set of instructions for what to do when the 
+	    response returns successfully (or not). These instructions are packed into the Response.Listener and Response.ErrorListener methods, 
+	    onResponse(T response) and onErrorResponse(T response). As a developer we will 
+	    <a href="https://docs.oracle.com/javase/tutorial/java/IandI/override.html">override</a> 
+	    the functions to define the actions to take. That way when the Response.Listener or Response.ErrorListener get alerted that 
+	    a response has returned, the onResponse() or onErrorResponse() method is called and the callback function we write as an 
+	    override gets executed.</p>
+	 </div>
+	 <div class="body-content">
+	    <h3> StringRequest </h3>
+	    <p> The StringRequest as explained earlier will be used when you're requesting what amounts to raw data. This will be returned to you
+	    in the form of a Java <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/String.html">String</a> object to the 
+	    Response.Listener, or a 
+	    <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/VolleyError.java">
+	    VolleyError</a> will be thrown and passed to the Response.ErrorListener. </p>
+	    
+	    <div class="body-content-code">
+	       <p>import com.android.volley.toolbox.StringRequest</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p><b>StringRequest</b>(int <b>method</b>, String <b>url</b>, Response.Listener&#60;String&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	       <p><b>StringRequest</b>(String <b>url</b>, Response.Listener&#60;String&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+	    </div>
+	    <p>Again we show the generic constructors. The <b>method</b> variable can be passed an int that represents the method to be used.
+	    The methods can be retrieved from the 
+	    <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/Request.java">Request</a>
+	    class in the following manner:</p>
+	    <div class="body-content-code">
+	       <p>int get = Request.Method.GET;<br>
+	       int post = Request.Method.POST;<br>
+	       int put = Request.Method.PUT;<br>
+	       int delete = Request.Method.DELETE;<br>
+	       int head = Request.Method.HEAD;<br>
+	       int options = Request.Method.OPTIONS;<br>
+	       int trace = Request.Method.TRACE;<br>
+	       int patch = Request.Method.PATCH;<br></p>
+	    </div>
+	    <p> These request types should be self evident to their purpose.</p>
+
+	    <p> The <b>url</b> is a Java String object that contains the target URL for your request.</p>
+	    <div class="body-content-code">
+	       <p>String <b>url</b> = "http://apitarget.com";</p>
+	    </div>
+	    <p> An incorrect <b>url</b> will result in an error being thrown.</p>
+
+	    <p> The interesting *stuff* happens in <b>listener</b>. The Response.Listener object can be instantiated as follows:</p>
+	    <div class="body-content-code">
+	       <p>Response.Listener&#60;String&#62; <b>myListener</b> = new Response.Listener&#60;String&#62;(){<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;public void onResponse(String <b>response</b>){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;/**Do what you want here**/<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;//Set a TextView to the Results OR<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;//Parse response into other variables or objects OR<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;//Call another function in the callback, etc. etc.<br>
+	       &nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;<br>
+	       }</p>
+	    </div>
+	    <p>As noted in the comments you can manipulate the <b>response</b> in onResponse(). This is the function that is called
+	    when a response is recieved in the RequestQueue. The RequestQueue will pass the parsed response body into the function as the String
+	    <b>response</b>. This does NOT include response headers. An example class that retrieves the response headers is shown as a custom
+	    request in the section Extending Custom Requests.</p>
+
+	    <p>Of course you'll have to handle errors that occur, since inevitably with networks errors occur. The Response.ErrorListener is roughly
+	    the same as the Response.Listener shown above, but it will be passed a VolleyError object instead of a String.</p>
+	    <div class="body-content-code">
+	       <p>Response.ErrorListener <b>myErrorListener</b> = new Response.ErrorListener(){<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;public void onErrorResponse(VolleyError error){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;/**Do what you want here**/<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;//Set a TextView to the Results OR<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;//Dump the stack trace, etc. etc.
+	       &nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;<br>
+	       }</p>
+	    </div>
+	    <p>Error handling practices are not discussed, so the design choices are left to the discretion of the developer.</p>
+
+	    <p>Now that we've broken it down, here's a complete example request:</p>
+	    <div class="body-content-code">
+	       <p>import .com.android.volley.Request<br>
+	       import .com.android.volley.RequestQueue<br>
+	       import .com.android.volley.Response<br><br>
+	       import .com.android.volley.toolbox.StringRequest<br>
+	       import .com.android.volley.toolbox.VolleyError<br>
+	       import .com.android.volley.toolbox.Volley</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>TextView <b>mTextView</b> = (TextView) findViewById(R.id.my_text_view); //Your TextView ID goes here</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>StringRequest <b>myReq</b> = new StringRequest(Request.Method.GET, "http://www.timeapi.org/utc/now",<br><br>
+	       &nbsp;&nbsp;new Response.Listener&#60;String&#62;() {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onResponse(String response){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView</b>.setText(response);<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;},<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;new Response.ErrorListener(){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onErrorResponse(VolleyError error){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView</b>.setText("ERROR: Check console for error and stack trace...");<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error.printStackTrace();<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;});</p>
+	       //Add Request to RequestQueue<br>
+	       Volley.newRequestQueue(getApplicationContext()).add(myReq); //Bad RequestQueue method, used for illustration only!
+	    </div>
+	    <p>At this point, the request will be put into a temporary RequestQueue and on the response either the onResponse() method from
+	    <b>listener</b> will be called, or the onErrorResponse() method from <b>errorListener</b> will be called and <b>mTextView</b> will
+	    show the appropriate text information.</p> 
+	 </div>
+
+	 <div class="body-content">
+	    <h3> JsonObjectRequest </h3>
+
+	    <p>The JsonObjectRequest functions in the exact same manner. The only difference is that it is designed assuming you won't be using
+	    it only for GET requests. It also requires an additional parameter of the Java
+	    <a href="http://docs.oracle.com/javaee/7/api/javax/json/JSONObject.html">JSONObject</a> type</p>
+	    <div class="body-content-code">
+
+	       <p><b>JsonObjectRequest</b>(int <b>method</b>, String <b>url</b>, JSONObject <b>jsonRequest</b>, Response.Listener&#60;JSONObject&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+
+	       <p><b>JsonObjectRequest</b>(String <b>url</b>, JSONObject <b>jsonRequest</b>, Response.Listener&#60;JSONObject&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+
+	    </div>
+	 
+	    <p>Again, looking at the constructors we see the familiar optional <b>method</b>, <b>url</b>, <b>listener</b>, and <b>errorListener</b>
+	    from the StringRequest. The difference with these familiar variables is that a check is made if you choose to omit the method. If
+	    <b>jsonRequest</b> is null, then a GET request is made, if not a POST request is made. It's also important to note that 
+	    <b>jsonRequest</b> is the JSON object we want sent in the body. We will show how to add your own headers in the JsonArrayRequest
+	    example.</p>
+
+	    <div class="body-content-code">
+	       <p>import .com.android.volley.Request<br>
+	       import .com.android.volley.RequestQueue<br>
+	       import .com.android.volley.Response<br><br>
+	       import .com.android.volley.toolbox.JsonObjectRequest<br>
+	       import .com.android.volley.toolbox.VolleyError<br>
+	       import .com.android.volley.toolbox.Volley</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>JSONObject <b>myJSONReq</b> = new JSONObject();<br>
+	       myJSONReq.put("name", "Sean");<br>
+	       myJSONReq.put("number", 14);</p>
+	       <p>TextView <b>mTextView</b> = (TextView) findViewById(R.id.my_text_view); //Your TextView ID goes here</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>JsonObjectRequest <b>myReq</b> = new JsonObjectRequest(Request.Method.POST, "http://www.httpbin.org/post", <b>myJSONReq</b>,<br><br>
+	       &nbsp;&nbsp;new Response.Listener&#60;JSONObject&#62;() {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onResponse(JSONObject response){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JSONObject data = response.getJSONObject("data"); //Retrieve original request body<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView</b>.setText("name: " + data.getString("name") + 
+									    " number: " + data.getInt("number"));<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;},<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;new Response.ErrorListener(){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onErrorResponse(VolleyError error){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView</b>.setText("ERROR: Check console for error and stack trace...");<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error.printStackTrace();<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;});</p>
+	       //Add Request to RequestQueue<br>
+	       Volley.newRequestQueue(getApplicationContext()).add(myReq); //Bad RequestQueue method, used for illustration only!
+	    </div>
+	    <p>It's clear the request code is almost identical except the JSONObject passed in the body. www.httpbin.org/post will actually
+	    return a JSONObject the outlines details about the post request. The body of the request httpbin.org/post recieves is returned 
+	    in the "data" field of the response object.</p>
+	 </div>
+
+	 <div class="body-content">
+	    <h3> JsonArrayRequest </h3>
+
+	    <p>JsonArrayRequests are the exact same as JsonObjectRequests except the <b>jsonRequest</b> in the request body must be of the
+	    <a href="http://docs.oracle.com/javaee/7/api/javax/json/JSONArray.html">JSONArray</a> type.</p>
+
+	    <div class="body-content-code">
+
+	       <p><b>JsonArrayRequest</b>(int <b>method</b>, String <b>url</b>, JONArray <b>jsonRequest</b>, Response.Listener&#60;JSONObject&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+
+	       <p><b>JsonArrayRequest</b>(String <b>url</b>, JSONArray <b>jsonRequest</b>, Response.Listener&#60;JSONObject&#62; <b>listener</b>, Response.ErrorListener <b>errorListener</b>);</p>
+
+	    </div>
+
+	    <p>The constructors are shown as reference, but are invoked in the same manner as both Requests shown prior. This example adds custom
+	    headers. It's important to note for beginners that when defining the new JsonObjectRequest in the previous examples there is an
+	    implicit {} after the new request parenthesis is closed. i.e. "new JsonObjectRequest(...){};". When we create a new instance of an
+	    object we can <a href="https://docs.oracle.com/javase/tutorial/java/IandI/override.html">override</a> methods in this set of brackets.
+	    The overridden methods are invoked in place of the original methods which we will take advantage of in this example.</p>
+
+	    <div class="body-content-code">
+	       <p>import .com.android.volley.Request<br>
+	       import .com.android.volley.RequestQueue<br>
+	       import .com.android.volley.Response<br><br>
+	       import .com.android.volley.toolbox.JsonArrayRequest<br>
+	       import .com.android.volley.toolbox.VolleyError<br>
+	       import .com.android.volley.toolbox.Volley</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>JSONArray <b>myJSONReq</b> = Json.createArrayBuilder()<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.add(Json.createObjectBuilder()<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.add("type", "home"))<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.add("number", "555-5555"))<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.add(Json.createObjectBuilder()<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.add("type", "cell"))<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.add("number", "555-5555"))<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.build();</p>
+	       <p>TextView <b>mTextView1</b> = (TextView) findViewById(R.id.my_text_view1); //Your TextView ID1 goes here</p>
+	       <p>TextView <b>mTextView2</b> = (TextView) findViewById(R.id.my_text_view2); //Your TextView ID2 goes here</p>
+	       <p>//<b>NOTE:</b>Example taken and slightly modified from 
+	       <a href="http://docs.oracle.com/javaee/7/api/javax/json/JSONArray.html">JSONArray</a> documentation</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>JsonArrayRequest <b>myReq</b> = new JsonArrayRequest(Request.Method.POST, "http://www.httpbin.org/post", <b>myJSONReq</b>,<br><br>
+	       &nbsp;&nbsp;new Response.Listener&#60;JSONArray&#62;() {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onResponse(JSONArray response){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JSONArray data = response.getJSONArray("data"); //Retrieve original request body<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView1</b>.setText("types: " + data.getJSONObject(0).getString("type") + 
+									    " number: " + data.getJSONObject(0).getString("number"));<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView2</b>.setText("headers: " + response.getJSONObject("headers").toString());<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;},<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;new Response.ErrorListener(){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onErrorResponse(VolleyError error){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView1</b>.setText("ERROR: Check console for error and stack trace...");<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error.printStackTrace();<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;}){<br>
+	       &nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;public Map&#60;String, String&#62; getHeaders() throws AuthFailureError {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;Map&#60;String, String&#62; params = new HashMap&#60;String, String&#62;;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;params.put("Content-Type", "application/json");<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;return params;<br>
+	       &nbsp;&nbsp;};<br>
+	       //Add Request to RequestQueue<br>
+	       Volley.newRequestQueue(getApplicationContext()).add(myReq); //Bad RequestQueue method, used for illustration only!</p>
+	    </div>
+	    <p> You can see the appended brackets at after the parameters are defined, and you can see we override the getHeaders() function.
+	    The header "Content-Type" will be attached with a value of "application/json" in the headers section of our request prior to 
+	    transmission. For the example we check the response from httpbin.org for the "headers" JSONObject and puts the whole contents
+	    in <b>mTextView2</b>.</p>
+	 </div>
+
+
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="button" id="prev_page" value="RequestQueue"> 
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b> Make An Image Request! </b><p> Follow the instructions on the following page to make image requests! </p></center>
+	    </div></center>
+	    <div class="button-wrapper-right">
+	       <input type="button" id="next_page" value="Image Requests"> 
+	    </div>
+	 </div>
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+
+   <script src="javascript/simple.js"></script>
+</html>

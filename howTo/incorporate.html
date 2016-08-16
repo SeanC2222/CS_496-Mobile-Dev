@@ -1,0 +1,152 @@
+<html>
+
+   <head>
+      <title> The Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1> <a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+
+	 <div class="intro-content">
+	    <h3> How To: This Page </h3>
+	    <p>This page shows an example activity that incorporates everything we've talked about. It doesn't do anything but
+	    serve as an example of how the code we've pieced through can work together in the big picture!</p>
+	    
+	    <p> Not a lot of time will be spent on discussion of 
+	    <a href="https://developer.android.com/reference/android/app/Activity.html">Activity</a> classes. The assumption is that
+	    if the user is trying to use Volley, they are familiar with the basic Activity structure of Android.</p>
+	 </div>
+
+
+      </section>
+
+      <section class="body-wrapper">
+
+	 <div class="body-content">
+	    <h3>Our Goal</h3>
+	    <p> The goal outlined is simple. We will tie together everything we've talked about into a quick custom app that has
+	    two Activity classes that utilize our permanentRequestQueue and our myRequest custom request that we built
+	 </div>
+
+	 <div class="body-content">
+	    <h3>Our Manifest</h3>
+	       
+	    <center><img class="body-content-img" src="images/app_man.jpg" width=70%></center><br>
+	    <center><b>Figure 1.</b> The Manifest of our app (note INTERNET permission!) </center><br>
+	 </div>
+
+	 <div class="body-content">
+	    <h3>Our build.gradle</h3>
+	       
+	    <center><img class="body-content-img" src="images/build_gradle.jpg" width=70%></center><br>
+	    <center><b>Figure 1.</b> The build.gradle for our APP<br> The volley library was a dependency for the two custom classes </center><br>
+	 </div>
+
+	 <div class="body-content">
+	    <h3>Our setting.gradle</h3>
+	       
+	    <center><img class="body-content-img" src="images/settings_gradle.jpg" width=70%></center><br>
+	    <center><b>Figure 1.</b> The settings.gradle for the project </center><br>
+	 </div>
+
+	 <div class="body-content">
+	    <h3>Our App: Main Activity</h3>
+	       
+	    <center><img class="body-content-img" src="images/main_act1.jpg" width=70%></center><br>
+	    <center><b>Figure 1.</b> The first portion of our main activity (first activity)<br> Notice the call to create a new
+	    permanentRequestQueue<br>Also notice the use of our custom request</center><br>
+
+	    <center><img class="body-content-img" src="images/main_act2.jpg" width=70%></center><br>
+	    <center><b>Figure 2.</b> The second portion of our main activity (first activity)<br> Notice the call to add <b>myReq</b> to the 
+	    permanentRequestQueue<br>Side note: There is no pause in the picture to prior to calling the second activity <br>
+	    I commented out the <b>next</b> block in order to get shots of the first request response</center><br>
+	 </div>
+
+	 <div class="body-content">
+	    <h3>Our App: Second Activity</h3>
+	       
+	    <center><img class="body-content-img" src="images/sec_act1.jpg" width=70%></center><br>
+	    <center><b>Figure 1.</b> The first portion of our second activity <br> Notice no call is made to create a new
+	    permanentRequestQueue<br>Also notice the use of our custom request</center><br>
+
+	    <center><img class="body-content-img" src="images/sec_act2.jpg" width=70%></center><br>
+	    <center><b>Figure 2.</b> The second portion of our second activity <br> Notice the call to add <b>myReq</b> to the 
+	    permanentRequestQueue</center><br>
+
+	 </div>
+
+	 <div class="body-content">
+	    <h3>Running Our App: SUCCESS!</h3>
+	       
+	    <center><img class="body-content-img" src="images/suc_req1.jpg" width=20%></center><br>
+	    <center><b>Figure 1.</b> The TextView after our first request is made </center><br>
+
+	    <center><img class="body-content-img" src="images/suc_req2.jpg" width=20%></center><br>
+	    <center><b>Figure 2.</b> The TextView after our second request is made </center><br>
+	 </div>
+
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="button" id="prev_page" value="Extending Custom Requests">
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b> Good Luck! </b><p> Hopefully this guide has helped shed light on the power of Google's Volley Library for 
+	       Android! </p></center>
+	    </div></center>
+	 </div>
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+
+   <script src="javascript/incorporate.js"></script>
+</html>

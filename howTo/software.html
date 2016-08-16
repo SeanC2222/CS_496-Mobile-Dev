@@ -1,0 +1,220 @@
+<html>
+
+   <head>
+      <title> The Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1><a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+
+	 <div class="intro-content">
+	    <h3> How To: This Page </h3>
+	    <p>Before jumping into the code we need to do some basic setup. On this page you'll find instructions to import the library source,
+	       set up the <a href="https://developer.android.com/studio/build/index.html">Gradle</a> build configuration, and update the app 
+	       <a href="https://developer.android.com/guide/topics/manifest/manifest-intro.html">manifest</a>. The examples shown use Android
+	       Studio, with current updates as of 8/6/16.</p>
+	 </div>
+
+      </section>
+
+      <section class="body-wrapper">
+	 <div class="body-content">
+	    <h3> Setting Up The Dependencies and Handling the Source Code </h3>
+	    <p>The source can be found at (or just click the header on this page!):</p>
+	    <div class="body-content-code">
+	       <a href="https://android.googlesource.com/platform/frameworks/volley/">https://android.googlesource.com/platform/frameworks/volley/</a>
+	    </div><br>
+	 </div>
+
+	 <div class="body-content">
+	    <h4> Method One: Remote Dependency </h4>
+	    <p>I'll save you some time. You don't need to store the source locally (follow Method Two if you feel compelled). The source
+	    has been approved to be a part of Android's jCenter, and so you can list it as a remote dependency of your app and the build
+	    process should automatically handle getting and adding the library for you. If this method doesn't work, you can always follow
+	    the second method. To do this, first open your project's config file for the project build (in Android Studio the build.gradle
+	    for the Project, <b>not</b> the app!). Ensure jcenter() is listed as a repository to reference. In Android Studio this will
+	    be in both the buildscript block, and the all projects sections.</p>
+
+	    <center><img class="body-content-img" src="images/dep_jcenter1.jpg" width=70%></center><br>
+	    <center><b>Figure 1.</b> Ensuring "jcenter()" is listed under the repository section<br> in buildscript and allprojects </center><br>
+
+	    <p>At this point, all you need to do is add the line </p>
+	    <div class="body-content-code">
+	       compile 'com.android.volley:volley:1.0.0'
+	    </div>
+	    <p> to your <b>app's</b> build.gradle file dependencies block and the source should be accessible to you at this point!</p>
+
+	    <center><img class="body-content-img" src="images/dep_jcenter2.jpg" width=70%></center><br>
+	    <center><b>Figure 2.</b> Adding to the dependencies block in the app's build.gradle file </center><br>
+	 </div>
+
+	 <div class="body-content">
+	    <h4> Method Two: Local Dependency</h4>
+
+	    <p>You could, of course, manually download all the files by hand. But one option is to retrieve the source using 
+	    <a href="https://git-scm.com/">Git</a> using the following command </p>
+
+	    <div class="body-content-code">
+	       git clone https://android.googlesource.com/platform/frameworks/volley
+	    </div>
+	    <p>from a command line where git is loaded in some form on the machine you're working on</p>
+
+	    <center><img class="body-content-img" src="images/get_src1.jpg" width=90%></center><br>
+	    <center><b>Figure 1.</b> Git clone command in the GitHub desktop shell (any command line works)  </center><br>
+	    <center><img class="body-content-img" src="images/get_src2.jpg" width=90%></center><br>
+	    <center><b>Figure 2.</b> Successful git clone of repo </center><br>
+	    
+	    <p>Once the source has been downloaded, you can import it into an IDE and build the project. Depending on the 
+	    build scheme, either a .jar or a .aar file (a simple zipped .jar file) will be output.</p>
+
+	    <center><img class="body-content-img" src="images/get_src3.jpg" width=70% ></center><br>
+	    <center><b>Figure 3.</b> Importing a Project in Android Studio </center><br>
+	    <center><img class="body-content-img" src="images/get_src4.jpg" width=70%></center><br>
+	    <center><b>Figure 4.</b> Accepting Gradle wrapper usage (if using Android Studio) </center><br>
+	    <center><img class="body-content-img" src="images/get_src5.jpg" width=30%></center><br>
+	    <center><b>Figure 5.</b> Successful source import to a project </center><br>
+	    <center><img class="body-content-img" src="images/get_src6.jpg" width=30%></center><br>
+	    <center><b>Figure 6.</b> Ensure build is release version (not debug version) </center><br>
+	    <center><img class="body-content-img" src="images/get_src7.jpg"></center><br>
+	    <center><b>Figure 7.</b> Building release in Android Studio </center><br>
+
+	    <p>Now that the source code has been built, you need to locate the .jar/.aar file in the project's build
+	    directory. This will be different depending on IDE configurations. Android Studio's default is to the build
+	    folder within that project's folder. Eclipse is the same. Copy this into the project's libs folder that you want
+	    to use Volley in.</p>
+
+	    <center><img class="body-content-img" src="images/get_src8.jpg" width=90%></center><br>
+	    <center><b>Figure 8.</b> Locating the release .aar file;<br>This should be moved to your project's lib folder </center><br>
+
+	    <p>The .jar/.aar file should now be located in your project's libs folder. From here to use the source, you must 
+	    create a module from the .jar/.aar file.</p>
+
+	    <center><img class="body-content-img" src="images/get_src9.jpg" width=50%></center><br>
+	    <center><b>Figure 9.</b> Creating a New Module in Android Studio </center><br>
+	    <center><img class="body-content-img" src="images/get_src10.jpg" width=70%></center><br>
+	    <center><b>Figure 10.</b> Selecting Import JAR/AAR Package </center><br>
+	    <center><img class="body-content-img" src="images/get_src11.jpg" width=70%></center><br>
+	    <center><b>Figure 11.</b> Locating the .jar/.aar file in &#60;your_app&#62;/libs and naming module "volley" </center><br>
+   
+	    <p>Depending if you're using Android Studio version, you may encounter a Gradle error. This can be fixed by simply selecting
+	    the "Fix Gradle wrapper and re-import project" option"</p>
+
+	    <center><img class="body-content-img" src="images/get_src_import_error.jpg" width=90%></center><br>
+	    <center><b>Figure 12.</b> Import error and suggested fix </center><br>
+
+	    <p> The source should now appear as a distinct module in your project explorer view with the name "volley". At this point,
+	    The code can be imported into your app as long as you update (or check the entries in) your build.gradle (or other) build files.
+	    The line you're looking for should say "compile project(':volley')" (in Android Studio; no double quotes). If the line doesn't 
+	    exist, add it in the section titled "dependencies".</p>
+
+	    <center><img class="body-content-img" src="images/dep_src.jpg" width=70%></center><br>
+	    <center><b>Figure 13.</b> Ensuring proper dependency</center>
+	 </div>
+      </div>
+
+      <div class="body-content">
+	 <h3>The Manifest</h3>
+	 <p>The last consideration should be made for any app, but you need to make sure your AndroidManifest.xml file is up to date.
+	 This file provides important meta-type data for your app to work properly. In our case, since Volley is a networking library
+	 it's safe to assume that for our app we'll need access to the internet. So ensure you add a the line </p>
+	 <div class="body-content-code">
+	    &#60;uses-permission android:name="android.permission.INTERNET" /&#62;
+	 </div>
+	 <p> to your manifest.</p>
+
+	 <center><img class="body-content-img" src="images/man_1.jpg" width=70%></center><br>
+	 <center><b>Figure 1.</b> Adding the permission to our AndroidManifest.xml </center><br>
+      </div>
+
+      <div class="body-content">
+	 <h3>Importing Volley</h3>
+	 <p>At this point, all that remains is to import Volley into your codebase by importing the appropriate classes. The goal here
+	 is to only import the relevant code. You could of course use
+
+	 <div class="body-content-code">
+	    import .com.volley.*
+	 </div>
+
+	 <p> to import the whole module, but this is unneccessary and a poor practice because it is unneccessary code to parse during
+	 AOT(<a href="https://source.android.com/devices/tech/dalvik">Ahead-of-Time</a> compilation). Essentially when the app is installed,
+	 the <a href="http://www.ibm.com/developerworks/library/it-haggar_bytecode/">Java Bytecode</a> is compiled to native machine code
+	 so that it runs faster. The more code to parse, the longer the compilation time. If you use Android Studio it will automatically
+	 suggest the appropriate classes that you're using as you're coding so imports won't be a major issue. If not, you'll have to add
+	 them manually. For example </p>
+
+	 <div class="body-content-code">
+	    import .com.volley.RequestQueue;<br>
+	    import .com.volley.toolbox.Volley;
+	 </div>
+	 
+	 <p>would be necessary to use the RequestQueue as we will be using it in the code examples.</p>
+
+      </div>
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="button" id="prev_page" value="The Library"> 
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b> RequestQueues Explained! </b><p> Follow the instructions on the following page to get a RequestQueue that
+		       works for you! </p></center>
+	    </div></center>
+	    <div class="button-wrapper-right">
+	       <input type="button" id="next_page" value="RequestQueue"> 
+	    </div>
+	 </div>
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+   <script src="javascript/software.js"></script>
+
+</html>

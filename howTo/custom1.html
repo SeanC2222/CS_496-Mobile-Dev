@@ -1,0 +1,229 @@
+<html>
+
+   <head>
+      <title> The Volley Library </title>
+      <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+
+   <body>
+      <section class="header-wrapper">
+	 <center><h1> <a href = "https://android.googlesource.com/platform/frameworks/volley/">Google's Volley Library</a></h1></center>
+	 <div class="header-about">
+	    <p>Sean Mulholland<br>
+	    CS 496 Summer 2016<br>
+	    How To: Google Volley Library</p>
+	 </div>
+      </section>
+
+      <section class="intro-wrapper">
+
+	 <div class="intro-content">
+	    <h3> How To: This Page </h3>
+	    <p>This page contains information on how to extend custom request types from the base abstract
+	    <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/Request.java">Request</a>
+	    class. The example used will focus on what needs to be implemented in order for a custom request to work, in particular
+	    packaging the response headers with the rest of the return data. 
+	    
+	    <p>It is presumed that the reader has read at least the StringRequest and JsonObjectRequest sections on the Simple HTTP Request page. 
+	    It is also presumed that the user has a basic knowledge of networking and basic inheritance.</p>
+	 </div>
+
+	 </div>
+
+      </section>
+
+      <section class="body-wrapper">
+
+	 <div class="body-content">
+	    <h3> Custom Requests </h3>
+	    <p>Custom requests take advantage of the base abstract class
+	    <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/Request.java">Request</a>.
+	    Using Java's <a href="https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html">Inheritance</a> properties, we can build a
+	    version of Request that performs exactly how we want it to. The custom request will inherit the majority of the base Request class
+	    but requires two methods to be defined explicitly by the developer. It will be handled just like our other Request objects do when
+	    we pass it to our RequestQueue, and like before when we instantiate a Request object we'll have to define the Response.Listener and
+	    Response.ErrorListener objects as well.</p>
+	    <p> We'll start by defining the extended custom class. </p>
+	 </div>
+
+	 <div class="body-content">
+	    <h3> The Custom Request</h3>
+	    <p> Java makes inheritance a fairly easy process. We can either define a standalone class that we can import as a module into our
+	    projects or we can define classes within the scope of our 
+	    <a href="https://developer.android.com/reference/android/app/Activity.html">Activity</a> classes. Since we addressed how to create
+	    a module on the RequestQueue page, we'll show the code out of any specific context as with the other requests and leave it to the 
+	    developer as to whether or not they want an individual module or an in activity class.</p>
+
+	    <p>Our example request will be created to allow various request methods, return a JSONObject that has the response data as well as the
+	    response headers, and will attach a key/value pair of its own as an example just to illustrate modifications of data during the parsing
+	    of the network response. The two methods that are required to be implemented are the parseNetworkResponse() and deliverResponse() 
+	    methods. The parseNetworkResponse() does exaclty that; it parses the incoming 
+	    <a href="https://android.googlesource.com/platform/frameworks/volley/+/master/src/main/java/com/android/volley/NetworkResponse.java">
+	    NetworkResponse</a> that contains the response data. It should return the parsed form of this data as a Response&#60;T&#62; where 'T'
+	    in our case will be the type, JSONObject. This returned value needs to be delivered to the Response.Listener of the Request object
+	    and so we must implement the deliverResponse() method as well that calls the Response.Listener abstract method onResponse() that
+	    we define when instantiating our requests. onResponse() will be revisited when we go over instatiating our custom Request. We will
+	    also implement a custom constructor in our Request to better understand the class.</p>
+
+	    <div class="body-content-code">
+	       <p>public class myRequest extends JsonRequest<JSONObject>{<br><br>
+	       //Private Members<br>
+	       &nbsp;&nbsp;private final Map&#60;String, String&#62; <b>mHeaders</b>    //Used for request AND response<br>
+	       &nbsp;&nbsp;private final Response.Listener<JSONObject> <b>mListener</b> //Stores Response.Listener in object<br><br>
+	       //Public Methods<br>
+	       &nbsp;&nbsp;public myRequest<JSONObject>(int <b>method</b>, String <b>url</b>, JSONObject <b>body</b>, Map&#60;String, String&#62; <b>headers</b>, <br> 
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Response.Listener <b>listener</b>, Response.ErrorListener <b>errorListener</b>){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;super(<b>method</b>, <b>url</b>, <b>body</b>.toString(), <b>listener</b>, <b>errorListener</b>); //Calls the Request<T> constructor<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<b>mListener</b> = <b>listener</b>;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<b>mHeaders</b> = <b>headers</b>;<br> 
+	       &nbsp;&nbsp;}<br><br>
+	       &nbsp;&nbsp;//Gathers returns mHeaders used in performing request
+	       &nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;public Map&#60;String, String&#62; getHeaders() throws AuthFailureError {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;return (<b>mHeaders</b> == <b>null</b>) ? super.getHeaders() : <b>mHeaders</b>;<br>
+	       &nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;protected void deliverResponse(JSONObject <b>response</b>){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<b>mListener</b>.onResponse(<b>response</b>);<br>
+	       &nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;protected Response<JSONObject> parseNetworkResponse(NetworkResponse <b>response</b>){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;try{<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JSONObject <b>jsonResponse</b> = new JSONObject(new String(<b>response</b>.data)); //Stores response body<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>jsonResponse</b>.put("headers",new JSONObject(<b>mHeaders</b>)); //Adds response headers as JSONObject<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>jsonResponse</b>.put("statusCode", <b>response</b>.statusCode);  //Adds response status code as int<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return Response.success(<b>jsonResponse</b>, HttpHeaderParser.parseCacheHeaders(<b>response</b>));<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;} catch (JSONException <b>je</b>) {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return Response.error(new ParseError(<b>je</b>));<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;}<br>
+	       }</p>
+	    </div>
+	    
+	    <p>This is simple class that should make Requests to <b>url</b> of whatever request <b>method</b> is used in the construction of
+	    the object. The <b>listener</b> and <b>errorListener</b> will be passed in as well during construction. The abstract class Request
+	    already has a member to store <b>errorListener</b> but as you can see in our class, we needed <b>mListener</b> to store <b>listener</b>.
+	    The member <b>mHeaders</b> is actually used in making the request (deep in the bowels of the library!). </p>
+	    <p>The method getHeaders() returns either the <b>mHeaders</b> if <b>mHeaders</b> is NOT null, or the headers returned by a call to the 
+	    Request version of getHeaders(). This is possible using the 
+	    <a href="https://docs.oracle.com/javase/tutorial/java/IandI/super.html">super</a> keyword that allows access to a parent class. In this
+	    case, the parent class just returns an empty Map&#60;String, String&#62; object.</p>
+	    <p>The deliverResponse() method simply invokes the Response.Listener method, onResponse() with the parameter <b>response</b></p>
+	    <p>And finally, our parseNetworkResponse takes the NetworkResponse object <b>response</b> and gets the body stored in a JSONObject
+	    <b>jsonResponse</b> created from a string created by the Byte array <b>response</b>.data. <b>jsonResponse</b> then pushes a key
+	    "headers" with the value <b>response</b>.headers(a Map&#60;String, String&#62; object). We also add one more key to <b>jsonResponse</b>
+	    with the value of the <b>response</b>.statusCode (an int). We then return the Response.success() which constructs a 
+	    Response<JSONObject> and returns it, which then itself gets returned by the parseNetworkResponse() function. There is some required
+	    error handling included as well. The only thing of note is that Response.error() is called which returns a VolleyError to the 
+	    object which then invokes the onErrorResponse() method of the Response.ErrorListener we pass (<b>errorListener</b>).</p>
+	 </div>
+	 
+	 <div class="body-content">
+	    <h3> Instantiating our Custom Request </h3>
+	    <p> The instantiation should come as no surprise that it is almost the same as the previous requests with the fewer changes we
+	    made in the constructor.</p>
+	    <div class="body-content-code">
+	       <p>import .com.android.volley.Request<br>
+	       import .com.android.volley.RequestQueue<br>
+	       import .com.android.volley.Response<br><br>
+	       import .com.android.volley.toolbox.VolleyError<br>
+	       import .com.android.volley.toolbox.Volley</p>
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>TextView <b>mTextView</b> = (TextView) findViewById(R.id.my_text_view); //Your TextView ID goes here</p>
+	       <p>JSONObject <b>mRequestBody</b> = new JSONObject();<br>
+	       <b>mRequestBody</b>.put("key1", "String!");<br>
+	       <b>mRequestBody</b>.put("key2", new JSONObject().put("innerKey", "innerValue"));<br>
+	       <b>mRequestBody</b>.put("key3", 1456);<br><br>
+	       Map&#60;String, String&#62; <b>mHeaders</b> = new HashMap&#60;String, String&#62;();<br>
+	       <b>mHeaders</b>.put("content-type", "application/json");
+	    </div>
+	    <p>...</p>
+	    <div class="body-content-code">
+	       <p>myRequest <b>myReq</b> = new myRequest(Request.Method.POST, "http://www.httpbin.org/post", <b>mRequestBody</b>, <b>mHeaders</b>,<br><br>
+	       &nbsp;&nbsp;new Response.Listener&#60;JSONObject&#62;() {<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onResponse(JSONObject response){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView</b>.setText(response.toString());<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;},<br>
+	       &nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;new Response.ErrorListener(){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;@Override<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;public void onErrorResponse(VolleyError error){<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>mTextView</b>.setText("ERROR: Check console for error and stack trace...");<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error.printStackTrace();<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+	       &nbsp;&nbsp;&nbsp;&nbsp;<br>
+	       &nbsp;&nbsp;});</p>
+	       //Add Request to RequestQueue<br>
+	       Volley.newRequestQueue(getApplicationContext()).add(myReq); //Bad RequestQueue method, used for illustration only!
+	    </div>
+	    <p>As I said, the instantiating is about the same. The difference is that we can pass a set of headers directly in our constructor,
+	    and pass a JSONObject to be parsed into the body (by the super constructor). We are simply using the JSONObject method to return
+	    the object <b>response</b> as a String object and setting the text of a TextView as our response (that gets created by the
+	    parseNetworkResponse() method we defined in the class!). The errors are handled simply as before</p>
+
+      </section>
+
+
+      <section class="conclusion-wrapper">
+	 <div class="conclusion-content">
+	    <div class="button-wrapper-left">
+	       <input type="button" id="prev_page" value="Image Requests">
+	    </div>
+	    <center><div class="conclusion-content-core">
+	       <center><b> Now you know! </b><p> Read on to see how Volley might fit into your future apps! </p></center>
+	    </div></center>
+	    <div class="button-wrapper-right">
+	       <input type="button" id="next_page" value="Incorporateing Volley Requests"> 
+	    </div>
+	 </div>
+      </section>
+
+      <span class="navigation-wrapper">
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/intro.html"> Introduction </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5><a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/library.html"> The Library </a></h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/software.html">Source & Setup</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/requestqueue.html">RequestQueue</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/simple.html">Simple HTTP Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/image.html">Image Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/custom1.html">Extending Custom Requests</a> </h5>
+	 </div>
+
+	 <div class="navigation-box">
+	    <h5> <a href="http://web.engr.oregonstate.edu/~mulholls/CS_496/howTo/incorporate.html">Incorporating Volley Requests</a> </h5>
+	 </div>
+
+      </span>
+
+   </body>
+
+   <script src="javascript/custom1.js"></script>
+</html>
