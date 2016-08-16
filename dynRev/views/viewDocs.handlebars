@@ -1,0 +1,76 @@
+<h1> Favorites Repository </h1>
+
+<div id="addDiv">
+	<form action="/addItem" method="POST">
+
+		<fieldset style="display: inline-block">
+			<legend>Favorite?</legend>
+			<center>
+			<input id="addItemCheck" type="checkbox" name="favorite" value=false>
+			</center>
+		</fieldset>
+
+		<fieldset style="display: inline-block">
+			<legend>Item Color</legend>
+			<label for="addItemRadio">Red</label>
+			<input id="addItemRadio" type="radio" name="color" value="LightCoral">
+			<label for="addItemRadio2">Blue</label>
+			<input id="addItemRadio2" type="radio" name="color" value="LightSkyBlue">
+			<label for="addItemRadio3">Yellow</label>
+			<input id="addItemRadio3" type="radio" name="color" value="LightGoldenRodYellow">
+			<label for="addItemRadio4">None</label>
+			<input id="addItemRadio4" type="radio" name="color" value="none" checked>
+		</fieldset>
+		<fieldset style="display: inline-block">
+			<legend>Name</legend>
+			<input id="addItemText1" type="text" name="itemName" value="">
+		</fieldset>
+
+		<fieldset style="display: inline-block">
+			<legend>Type</legend>
+			<select id="addItemText2" name="itemType" value="">
+				<option value="Image">Image</option>
+				<option value="Video">Video</option>
+				<option value="Gif">Gif</option>
+				<option value="Link">Link</option>
+				<option value="Other">Other</option>
+			</select>
+		</fieldset>
+
+		<fieldset style="display: inline-block">
+			<legend>URI</legend>
+			<input id="addItemText3" type="url" name="itemURI" value="">
+		</fieldset>
+		
+		<input type="button" id="addItem" name="addItem" value="Add New Item">
+	</form>
+</div>
+
+<div id="statusBox">
+</div>
+
+<br>
+
+<div id="currentItems">
+	<table>
+		<tbody>
+			<tr>
+				<th>Favorite</th>
+				<th>Name</th>
+				<th>Type</th>
+				<th>URI</th>
+			</tr>
+			{{#each items}}
+				<tr id={{this._id}} style="background-color: {{this.color}}">
+					<td class="favorite">{{#if this.favorite}}*{{/if}}</td>
+					<td class="name">{{this.name}}</td>
+					<td class="type">{{this.type}}</td>
+					<td class="uri"><a href="{{this.uri}}">{{this.uri}}</td>
+					<td><input type="button" class="editButtons" value="Edit Entry"></td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
+
+<script src="/public/scripts/viewDocs.js"></script>

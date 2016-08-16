@@ -1,0 +1,55 @@
+h1 {
+	font: 36px bold calibri, arial, sans-serif;
+}
+
+legend {
+	font: 14px calibri, arial, sans-serif;
+}
+
+label {
+	font: 16px calibri, arial, sans-serif;
+}
+
+input {
+	font: 16px calibri, arial, sans-serif;
+}
+
+input.name {
+	width: 95%;
+}
+
+input.uri {
+	width: 95%;
+}
+
+select.color {
+	width: 95%;
+}
+
+#currentItems {
+	display: inline-block;
+	font: 16px calibri, arial, sans-serif;
+	border: 1px solid silver;
+}
+
+
+td {
+	text-align: center;
+	width: 5%;
+}
+
+td.favorite {
+	width: 5%;
+}
+
+td.name {
+	width: 15%;
+}
+
+td.type {
+	width: 8%;
+}
+
+td.uri {
+	width: 50%;
+}

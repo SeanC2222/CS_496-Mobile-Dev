@@ -1,0 +1,19 @@
+{
+  "name": "dynrev",
+  "version": "1.0.0",
+  "description": "Dynamic Webpage Review",
+  "main": "dynRev.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sean C. Mulholland",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "mongodb": "^2.1.18",
+    "request": "^2.72.0"
+  },
+  "private": "true"
+}
