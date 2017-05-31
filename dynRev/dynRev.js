@@ -7,7 +7,7 @@ var mongodbParent = require('mongodb');
 
 //Application Settings
 var dynRev = exp();
-dynRev.set('port', process.env.PORT || 3002);
+dynRev.set('port', process.env.PORT || 3010);
 
 //Rendering Engine
 dynRev.engine('handlebars', han.engine);
@@ -18,7 +18,7 @@ dynRev.use(parse.urlencoded({ extended: false }));
 dynRev.use(parse.json());
 
 //Database Setup
-var url = "mongodb://localhost:27017/dynRev";
+var url = "mongodb://localhost:26666/dynRev";
 
 //Supporting Content Folders
 dynRev.use('/public/scripts', exp.static(__dirname + '/public/scripts'));
