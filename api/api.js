@@ -22,7 +22,7 @@ api.use(parse.urlencoded({ extended: false }));
 api.use(parse.json());
 
 //Database Setup
-var url = "mongodb://localhost:27017/api";
+var url = "mongodb://localhost:26666/api";
 
 //Session Setup
 api.use(session({secret: apivars.sessionPass}));
